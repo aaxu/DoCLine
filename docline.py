@@ -38,13 +38,15 @@ def format_line(line):
     if len(formatted_line) <= COLUMNS:
         return [formatted_line]
     break_line_at_index = COLUMNS
-    while not (formatted_line[break_line_at_index].isspace() and
-                       break_line_at_index > 0):
+    while (not formatted_line[break_line_at_index].isspace() and
+           break_line_at_index > 0):
         break_line_at_index -= 1
     if break_line_at_index > 0:
         output.append(formatted_line[0:break_line_at_index])
         leftover_string = INDENTATION + formatted_line[break_line_at_index:]
         output.extend(format_line(leftover_string))
+    else:
+        output.append(formatted_line)
     return output
 
 
@@ -52,9 +54,7 @@ def format_line(line):
 def main():
     command = sys.argv
     sys.argv[0] = 'pydoc'
-    text_wrapper = textwrap.TextWrapper(replace_whitespace=False,
-                                        width=COLUMNS)
-    output = text_wrapper.fill(subprocess.check_output(command)).split("\n")
+    output = subprocess.check_output(command).split('\n')
     formatted_text = []
     for line in output:
         formatted_text.extend(format_line(line))
