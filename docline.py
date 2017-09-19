@@ -37,21 +37,23 @@ def format_line(line, line_indentation):
     """
     output = []
     margin_right = 3
-    formatted_line = line.strip()
-    if formatted_line == '' or formatted_line == None:
+    # Don't strip the first line, since it may be already formatted.
+    if line_indentation:
+        line = line.strip()
+    if not line:
         return []
-    formatted_line = line_indentation + formatted_line
-    if len(formatted_line) <= COLUMNS - margin_right:
-        return [formatted_line]
+    line = line_indentation + line
+    if len(line) <= COLUMNS - margin_right:
+        return [line]
     break_line_at_index = COLUMNS - margin_right
-    while (not formatted_line[break_line_at_index].isspace() and
+    while (not line[break_line_at_index].isspace() and
            break_line_at_index >= len(line_indentation)):
         break_line_at_index -= 1
     # Case for one really long word
     if break_line_at_index < len(line_indentation):
         break_line_at_index = COLUMNS - margin_right
-    output.append(formatted_line[:break_line_at_index])
-    leftover_string = formatted_line[break_line_at_index:]
+    output.append(line[:break_line_at_index])
+    leftover_string = line[break_line_at_index:]
     output.extend(format_line(leftover_string, INDENTATION))
     return output
 
