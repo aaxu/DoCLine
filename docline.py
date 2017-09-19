@@ -1,5 +1,7 @@
+import os
 import sys
 import subprocess
+import textwrap
 from reppy.robots import Robots
 
 USER_AGENT = 'DoCLine Parser (http://github.com/aaxu/docline)'
@@ -19,8 +21,14 @@ def check_website_policy(url):
 def main():
     command = sys.argv
     sys.argv[0] = 'pydoc'
-    process = subprocess.Popen(command, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-    print process.communicate()
+    text_wrapper = textwrap.TextWrapper(replace_whitespace=False,
+                                        width=120)
+    output = text_wrapper.fill(subprocess.check_output(command))
+    output = output.replace("\n", "\n    ")
+    print output
+    while 1:
+        rows, columns = os.popen('stty size', 'r').read().split()
+        print rows, columns
 
 if __name__ == '__main__':
     main()
