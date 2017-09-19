@@ -2,13 +2,12 @@ import os
 import re
 import sys
 import subprocess
-import textwrap
 from reppy.robots import Robots
 
 USER_AGENT = 'DoCLine Parser (http://github.com/aaxu/docline)'
 INDENTATION = " " * 4
-_, columns = os.popen('stty size', 'r').read().split()
-COLUMNS = int(columns)
+ROWS, COLUMNS = [int(dim) for dim in
+                 (os.popen('stty size', 'r').read().split())]
 
 def check_website_policy(url):
     """
@@ -60,6 +59,12 @@ def format_line(line, line_indentation):
 
 
 def main():
+    """
+    Main logic of the program.
+
+    Returns:
+        None.
+    """
     command = sys.argv
     sys.argv[0] = 'pydoc'
     output = subprocess.check_output(command).split('\n')
@@ -67,9 +72,9 @@ def main():
     for line in output:
         formatted_text.extend(format_line(line, ""))
 
-    formatted_text = "\n".join(formatted_text)
-    formatted_text = re.sub(r'[|]', '  ', formatted_text)
-    print formatted_text
+    output = "\n".join(formatted_text)
+    output = re.sub(r'[|]', '  ', formatted_text)
+    print output
 
 if __name__ == '__main__':
     main()
