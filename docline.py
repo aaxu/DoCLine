@@ -40,7 +40,7 @@ def format_line(line, line_indentation):
     if line_indentation:
         line = line.strip()
     if not line:
-        return []
+        return [""]
     line = line_indentation + line
     if len(line) <= COLUMNS - margin_right:
         return [line]
@@ -74,7 +74,7 @@ def main():
 
     output = "\n".join(formatted_text)
     output = re.sub(r'[|]', '  ', output)
-    print output
+    print '\n', output
 
 if __name__ == '__main__':
     main()
