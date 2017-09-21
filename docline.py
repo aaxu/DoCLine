@@ -9,6 +9,7 @@ USER_AGENT = 'DoCLine Parser (http://github.com/aaxu/docline)'
 INDENTATION = " " * 4
 ROWS, COLUMNS = [int(dim) for dim in
                  (os.popen('stty size', 'r').read().split())]
+MARGIN_RIGHT = 3
 
 def check_website_policy(url):
     """
@@ -45,40 +46,54 @@ def color_text(text, color):
     return color + text + colorama.Style.RESET_ALL
 
 
-def format_line(line, line_indentation):
+def format_line(line):
     """
-    Takes in a string and returns a list of strings such that they
-    fit nicely on the terminal screen.
     Args:
         line: The line you want to format.
-        line_indentation: The string indentation that a line should
-                          take when the line wraps around the screen.
 
     Returns:
         A list of strings that you can print consecutively to output
         a nicely formatted text.
     """
-    output = []
-    margin_right = 3
-    # Don't strip the first line, since it may be already formatted.
-    if line_indentation:
-        line = line.strip()
-    if not line:
-        return [""]
-    line = line_indentation + line
-    if len(line) <= COLUMNS - margin_right:
-        return [line]
-    break_line_at_index = COLUMNS - margin_right
-    while (not line[break_line_at_index].isspace() and
-           break_line_at_index >= len(line_indentation)):
-        break_line_at_index -= 1
-    # Case for one really long word
-    if break_line_at_index < len(line_indentation):
-        break_line_at_index = COLUMNS - margin_right
-    output.append(line[:break_line_at_index])
-    leftover_string = line[break_line_at_index:]
-    output.extend(format_line(leftover_string, INDENTATION))
-    return output
+    def format_line_with_indents(line, indent):
+        """
+        Args:
+            line: The line you want to format.
+            line_indent: The string indentation that a line should
+                              take when the line wraps around the screen.
+
+        Returns:
+            A list of strings that you can print consecutively to output
+            a nicely formatted text.
+        """
+        output = []
+        next_line_indent = ''
+        # Don't strip the first line, since it may be already formatted.
+        if indent:
+            line = line.strip()
+        else:
+            # Set the indentation for the wraparound text.
+            current_line_indent = re.match(r'^\s*', line).group()
+            next_line_indent = current_line_indent + INDENTATION
+        # Keep empty lines as they are used to space out sections in the text.
+        if not line:
+            return [""]
+        line = indent + line
+        if len(line) <= COLUMNS - MARGIN_RIGHT:
+            return [line]
+        break_line_at_index = COLUMNS - MARGIN_RIGHT
+        while (not line[break_line_at_index].isspace() and
+               break_line_at_index >= len(indent)):
+            break_line_at_index -= 1
+        # Case for one really long word
+        if break_line_at_index < len(indent):
+            break_line_at_index = COLUMNS - MARGIN_RIGHT
+        output.append(line[:break_line_at_index])
+        leftover_string = line[break_line_at_index:]
+        output.extend(format_line_with_indents(leftover_string,
+                                               next_line_indent))
+        return output
+    return format_line_with_indents(line, '')
 
 def main():
     """
@@ -89,13 +104,13 @@ def main():
     """
     command = sys.argv
     sys.argv[0] = 'pydoc'
-    output = subprocess.check_output(command).split('\n')
-    formatted_text = []
-    for line in output:
-        formatted_text.extend(format_line(line, ""))
-
-    output = "\n".join(formatted_text)
+    output = subprocess.check_output(command)
     output = re.sub(r'\|', '  ', output)
+    lines = output.split('\n')
+    formatted_text = []
+    for line in lines:
+        formatted_text.extend(format_line(line))
+    output = "\n".join(formatted_text)
     output = re.sub(r'(.+\(\.\.\.\))', yellow_text(r'\1'), output)
     print '\n', output
 
