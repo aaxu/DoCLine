@@ -22,6 +22,29 @@ def check_website_policy(url):
     robot = Robots.fetch(robot_url)
     return robot.allowed(url, USER_AGENT)
 
+def yellow_text(text):
+    """
+    Args:
+        text: The string you want to print in yellow.
+
+    Returns:
+        The same string, but will be yellow when printed.
+    """
+    return color_text(text, colorama.Fore.LIGHTYELLOW_EX)
+
+def color_text(text, color):
+    """
+    Args:
+        text: The string that you want to print in color.
+        color: The color that you want the string to print in.
+               This should be a colorama foreground color.
+
+    Returns:
+        A string that will be in color when printed.
+    """
+    return color + text + colorama.Style.RESET_ALL
+
+
 def format_line(line, line_indentation):
     """
     Takes in a string and returns a list of strings such that they
@@ -57,8 +80,6 @@ def format_line(line, line_indentation):
     output.extend(format_line(leftover_string, INDENTATION))
     return output
 
-
-
 def main():
     """
     Main logic of the program.
@@ -74,7 +95,8 @@ def main():
         formatted_text.extend(format_line(line, ""))
 
     output = "\n".join(formatted_text)
-    output = re.sub(r'[|]', '  ', output)
+    output = re.sub(r'\|', '  ', output)
+    output = re.sub(r'(.+\(\.\.\.\))', yellow_text(r'\1'), output)
     print '\n', output
 
 if __name__ == '__main__':
