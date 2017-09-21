@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import subprocess
+import colorama
 from reppy.robots import Robots
 
 USER_AGENT = 'DoCLine Parser (http://github.com/aaxu/docline)'
@@ -77,4 +78,5 @@ def main():
     print '\n', output
 
 if __name__ == '__main__':
+    colorama.init()
     main()
