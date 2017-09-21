@@ -31,7 +31,7 @@ def blue_text(text):
     Returns:
         The same string, but will be blue when printed.
     """
-    return color_text(text, colorama.Fore.BLUE)
+    return color_text(text, colorama.Fore.LIGHTBLUE_EX)
 
 def yellow_text(text):
     """
