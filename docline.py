@@ -73,7 +73,7 @@ def main():
         formatted_text.extend(format_line(line, ""))
 
     output = "\n".join(formatted_text)
-    output = re.sub(r'[|]', '  ', formatted_text)
+    output = re.sub(r'[|]', '  ', output)
     print output
 
 if __name__ == '__main__':
