@@ -80,7 +80,7 @@ class Text:
         # func_name(...) or func_name(self) or func_name(self, ...)
         yellow = colorama.Fore.LIGHTYELLOW_EX
         default = colorama.Style.RESET_ALL
-        text = re.sub(r'([ \t]+)([\w_]+\((\.{3}|self.*|\s)*\))',
+        text = re.sub(r'(\n[\s|]+)([\w_]+\([^\)]*\))',
                       r'\1' + self.yellow_text(r'\2'), text)
         # import pdb; pdb.set_trace()
         # Make all constant names blue.
