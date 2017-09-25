@@ -91,8 +91,6 @@ class Text:
                 A list of strings that you can print consecutively to
                 output a nicely formatted text.
             """
-            list_of_lines = []
-            next_line_indent = ''
             # Don't strip the first line, since it may be already formatted.
             if indent:
                 line = line.strip()
@@ -105,24 +103,22 @@ class Text:
                 return [line]
             break_line_at_index = COLUMNS - self.margin_right
             while (not line[break_line_at_index].isspace() and
-                   break_line_at_index >= len(indent) + self.margin_left):
+                           break_line_at_index >= len(indent) + self.margin_left):
                 break_line_at_index -= 1
             # Case for one really long word
             if break_line_at_index < len(indent) + self.margin_left:
                 break_line_at_index = COLUMNS - self.margin_right
-            list_of_lines.append(line[:break_line_at_index])
-            leftover_string = line[break_line_at_index:]
             # Set the indentation for the wraparound text.
             if indent:
-                next_line_indent = self.indentation
+                next_indent = indent
             else:
-                current_line_indent = re.match(r'^\s*', line).group()
-                num_indents = len(current_line_indent) - self.margin_left -\
-                              len(indent)
-                next_line_indent = num_indents * ' '
-            list_of_lines.extend(format_line_with_indents(leftover_string,
-                                                          next_line_indent))
-            return list_of_lines
+                current_indent = (re.match(r'^\s*[^\w\s]*\s*', line).group())
+                next_indent = (current_indent[self.margin_left:] +
+                               self.indentation)
+            first_line = [line[:break_line_at_index]]
+            rest_of_lines = format_line_with_indents(line[break_line_at_index:],
+                                                     next_indent)
+            return first_line + rest_of_lines
 
         return format_line_with_indents(line, '')
 
@@ -132,8 +128,7 @@ class Text:
             The text in this object such that it wraps around the terminal
             and has colors when printed.
         """
-        nice_text = re.sub(r'\|', r' ', self.text)
-        lines = nice_text.split('\n')
+        lines = self.text.split('\n')
         formatted_text = []
         for line in lines:
             split_lines = self.__format_line_wrap(line)
