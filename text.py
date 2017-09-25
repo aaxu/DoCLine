@@ -19,23 +19,45 @@ class Text:
                  margin_left=MARGIN_LEFT, margin_right=MARGIN_RIGHT):
         """
         Args:
-            text: The text you want to format.
-            indentation: The amount of indentation that you
-                         want wraparounds to have.
-            margin_left: The amount of empty space on the left side
-                         of the screen you want the text to leave.
-            margin_right: The amount of empty space on the right side
-                          of the screen you want the text to leave.
+            text (string): The text you want to format.
+            indentation (string): The amount of indentation that you
+                                  want wraparounds to have.
+            margin_left (int): The amount of empty space on the left side
+                               of the screen you want the text to leave.
+            margin_right (int): The amount of empty space on the right side
+                                of the screen you want the text to leave.
         """
         self.text = text
         self.indentation = indentation
         self.margin_right = margin_right
         self.margin_left = margin_left
 
+    def color_text(self, text, color):
+        """
+        Args:
+            text (string): The string that you want to print in color.
+            color (string): The color that you want the string to print in.
+                            This should be a colorama foreground color.
+
+        Returns:
+            A string that will be in color when printed.
+        """
+        return color + text + colorama.Style.RESET_ALL
+
+    def yellow_text(self, text):
+        """
+        Args:
+            text (string): The string you want to print in yellow.
+
+        Returns:
+            The same string, but will be yellow when printed.
+        """
+        return self.color_text(text, colorama.Fore.LIGHTYELLOW_EX)
+
     def blue_text(self, text):
         """
         Args:
-            text: The string you want to print in blue.
+            text (string): The string you want to print in blue.
 
         Returns:
             The same string, but will be blue when printed.
@@ -45,58 +67,17 @@ class Text:
     def magenta_text(self, text):
         """
             Args:
-                text: The string you want to print in magenta.
+                text (string): The string you want to print in magenta.
 
             Returns:
                 The same string, but will be magenta when printed.
         """
         return self.color_text(text, colorama.Fore.LIGHTMAGENTA_EX)
 
-    def yellow_text(self, text):
-        """
-        Args:
-            text: The string you want to print in yellow.
-
-        Returns:
-            The same string, but will be yellow when printed.
-        """
-        return self.color_text(text, colorama.Fore.LIGHTYELLOW_EX)
-
-    def color_text(self, text, color):
-        """
-        Args:
-            text: The string that you want to print in color.
-            color: The color that you want the string to print in.
-                   This should be a colorama foreground color.
-
-        Returns:
-            A string that will be in color when printed.
-        """
-        return color + text + colorama.Style.RESET_ALL
-
-    def __format_text_colors(self, text):
-        # Make the header of each function yellow.
-        # This regex matches anything of the forms
-        # func_name(...) or func_name(self) or func_name(self, ...)
-        yellow = colorama.Fore.LIGHTYELLOW_EX
-        default = colorama.Style.RESET_ALL
-        text = re.sub(r'(\n[\s|]+)([\w_]+\([^\)]*\))',
-                      r'\1' + self.yellow_text(r'\2'), text)
-        # import pdb; pdb.set_trace()
-        # Make all constant names blue.
-        text = re.sub(r'(\s[A-Z0-9_\-]+\s*)(=)',
-                      self.blue_text(r'\1') + r'\2', text)
-
-        # Color all section headers.
-        text = re.sub(r'(\n[ \t]+)([A-Z_]+[A-Z_ \t\d]*)(\n)',
-                      r'\1' + self.magenta_text(r'\2') + r'\3', text)
-        text = re.sub(r'(Help on[\w\s]+:)', self.magenta_text(r'\1'), text)
-        return text
-
     def __format_line_wrap(self, line):
         """
         Args:
-            line: The line you want to format.
+            line (string): The line you want to format.
 
         Returns:
             A list of strings that you can print consecutively to
@@ -145,11 +126,28 @@ class Text:
 
         return format_line_with_indents(line, '')
 
+    def __format_text_colors(self, text):
+        # Make the header of each function yellow.
+        # This regex matches anything of the forms
+        # func_name(...) or func_name(self) or func_name(self, ...)
+        text = re.sub(r'(\n[\s|]+)([\w_]+\([^\)]*\))',
+                      r'\1' + self.yellow_text(r'\2'), text)
+        # import pdb; pdb.set_trace()
+        # Make all constant names blue.
+        text = re.sub(r'(\s[A-Z0-9_\-]+\s*)(=)',
+                      self.blue_text(r'\1') + r'\2', text)
+
+        # Color all section headers.
+        text = re.sub(r'(\n[ \t]+)([A-Z_]+[A-Z_ \t\d]*)(\n)',
+                      r'\1' + self.magenta_text(r'\2') + r'\3', text)
+        text = re.sub(r'(Help on[\w\s]+:)', self.magenta_text(r'\1'), text)
+        return text
+
     def get_formatted_text(self):
         """
         Returns:
-            The text in this object such that it wraps around the terminal
-            and has colors when printed.
+            The text (string) in this object such that it wraps
+            around the terminal and has colors when printed.
         """
         lines = self.text.split('\n')
         formatted_text = []
@@ -161,6 +159,34 @@ class Text:
         nice_text = '\n'.join(formatted_text)
         nice_text = self.__format_text_colors(nice_text)
         return nice_text
+
+    def get_text(self):
+        """
+        Returns:
+            The raw text inside this Text object.
+        """
+        return self.text
+
+    def is_function_header(self, text):
+        """
+        Args:
+            text (string): The text you want to check.
+
+        Returns:
+            True if text is a function header. Otherwise, false.
+        """
+        pass
+
+
+    def set_text(self, text):
+        """
+        Args:
+            text (string): The new string to put into this Text object.
+
+        Returns:
+            None.
+        """
+        self.text = text
 
     def __str__(self):
         """
