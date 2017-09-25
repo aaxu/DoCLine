@@ -102,16 +102,16 @@ class Text:
             # Keep empty lines as they are used to space out sections in the text.
             if not line:
                 return [""]
-            margin_left_str = " " * self.margin_left
-            line = margin_left_str + indent + line
+            current_indent = " " * self.margin_left + indent
+            line = current_indent + line
             if len(line) <= COLUMNS - self.margin_right:
                 return [line]
             break_line_at_index = COLUMNS - self.margin_right
             while (not line[break_line_at_index].isspace() and
-                   break_line_at_index >= len(indent) + self.margin_left):
+                   break_line_at_index >= len(current_indent)):
                 break_line_at_index -= 1
             # Case for one really long word
-            if break_line_at_index < len(indent) + self.margin_left:
+            if break_line_at_index < len(current_indent):
                 break_line_at_index = COLUMNS - self.margin_right
             # Set the indentation for the wraparound text.
             if indent:
