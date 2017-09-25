@@ -66,7 +66,8 @@ class Text:
         text = re.sub(r'(\s\w+\((?:\.{3}|self.*)\)\s)',
                       self.__yellow_text(r'\1'), text)
         # Make all constant names blue.
-        text = re.sub(r'(\s[A-Z0-9_\-]+\s*)(=)', self.__blue_text(r'\1') + r'\2', text)
+        text = re.sub(r'(\s[A-Z0-9_\-]+\s*)(=)',
+                      self.__blue_text(r'\1') + r'\2', text)
         return text
 
     def __format_line_wrap(self, line):
