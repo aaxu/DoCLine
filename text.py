@@ -31,10 +31,10 @@ class Text:
         self.indentation = indentation
         self.margin_right = margin_right
         self.margin_left = margin_left
-        self.function_regex = re.compile(r'^([\s|]+)([\w_]+\([^\)]*\))(\s*)$')
-        self.constant_regex = re.compile('^([\s|]*)([A-Z0-9_\-]+)(\s*)=')
-        self.section_regex1 = re.compile(r'^(\s+)([A-Z_]+[A-Z_ \t\d]*)(\s*)$')
-        self.section_regex2 = re.compile(r'(Help on.+)(:)')
+        self.function_regex = re.compile(r'^([\s\|]+)([\w_]+\([^\)]*\))(\s*)$')
+        self.constant_regex = re.compile(r'^([\s\|]*)([A-Z0-9_\-]+)(\s*)=')
+        self.section_regex1 = re.compile(r'^([\s\|]*)([A-Z_]+[A-Z_ \t\d]*)(\s*)$')
+        self.section_regex2 = re.compile(r'^([\s\|]*)(.+)(:)$')
 
     def color_text(self, text, color):
         """
