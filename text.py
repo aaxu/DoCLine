@@ -31,6 +31,10 @@ class Text:
         self.indentation = indentation
         self.margin_right = margin_right
         self.margin_left = margin_left
+        self.function_regex = re.compile(r'^[\s|]+[\w_]+\([^\)]*\)\s*$')
+        self.constant_regex = re.compile('^[\s|]*[A-Z0-9_\-]+\s*=')
+        self.section_regex1 = re.compile(r'^\s+[A-Z_]+[A-Z_\s\d]*$')
+        self.section_regex2 = re.compile(r'Help on.+:')
 
     def color_text(self, text, color):
         """
@@ -88,8 +92,8 @@ class Text:
             """
             Args:
                 line: The line you want to format.
-                line_indent: The string indentation that a line should
-                                  take when the line wraps around the screen.
+                indent: The string indentation that a line should
+                        take when the line wraps around the screen.
 
             Returns:
                 A list of strings that you can print consecutively to
@@ -126,22 +130,23 @@ class Text:
 
         return format_line_with_indents(line, '')
 
-    def __format_text_colors(self, text):
-        # Make the header of each function yellow.
-        # This regex matches anything of the forms
-        # func_name(...) or func_name(self) or func_name(self, ...)
-        text = re.sub(r'(\n[\s|]+)([\w_]+\([^\)]*\))',
-                      r'\1' + self.yellow_text(r'\2'), text)
-        # import pdb; pdb.set_trace()
-        # Make all constant names blue.
-        text = re.sub(r'(\s[A-Z0-9_\-]+\s*)(=)',
-                      self.blue_text(r'\1') + r'\2', text)
+    def __format_line_colors(self, line):
+        """
+        Takes in a string colors it depending on whether
+        it is a function, section header, or constant definition.
+        Args:
+            line (string): The line you want to check.
 
-        # Color all section headers.
-        text = re.sub(r'(\n[ \t]+)([A-Z_]+[A-Z_ \t\d]*)(\n)',
-                      r'\1' + self.magenta_text(r'\2') + r'\3', text)
-        text = re.sub(r'(Help on[\w\s]+:)', self.magenta_text(r'\1'), text)
-        return text
+        Returns:
+            The string but colored if printed.
+        """
+        if self.is_function_header(line):
+            return self.yellow_text(line)
+        elif self.is_constant_definition(line):
+            return self.blue_text(line)
+        elif self.is_section_header(line):
+            return self.magenta_text(line)
+        return line
 
     def get_formatted_text(self):
         """
@@ -153,11 +158,10 @@ class Text:
         formatted_text = []
         for line in lines:
             split_lines = self.__format_line_wrap(line)
-            # # TODO: Use these to highlight function signatures that wrap.
-            # for i, segment in enumerate(split_lines):
-            formatted_text.extend(split_lines)
+            new_line = '\n'.join(split_lines)
+            colored_line = self.__format_line_colors(new_line)
+            formatted_text.append(colored_line)
         nice_text = '\n'.join(formatted_text)
-        nice_text = self.__format_text_colors(nice_text)
         return nice_text
 
     def get_text(self):
@@ -169,13 +173,45 @@ class Text:
 
     def is_function_header(self, text):
         """
+        This regex matches anything of the forms
+        func_name(...) or func_name(self) or func_name(self, ...)
+
         Args:
             text (string): The text you want to check.
 
         Returns:
-            True if text is a function header. Otherwise, false.
+            The regex match object if the text is a function header.
+            Otherwise, None.
         """
-        pass
+        return self.function_regex.search(text)
+
+    def is_constant_definition(self, text):
+        """
+        This regex checks if the line starts with a word
+        in all caps and assigns a value to it.
+
+        Args:
+            text (string): The text you want to check.
+
+        Returns:
+            The regex match object if the text is a constant definition.
+            Otherwise, None.
+        """
+        return self.constant_regex.search(text)
+
+    def is_section_header(self, text):
+        """
+        This regex checks if text is a section header that starts with
+        a word that is all caps, or beings with "Help on".
+        Args:
+            text (string): The text you want to check.
+
+        Returns:
+            The regex match object if the text is a section header.
+            Otherwise, None.
+        """
+        return (self.section_regex1.search(text) or
+                self.section_regex2.search(text))
 
 
     def set_text(self, text):
