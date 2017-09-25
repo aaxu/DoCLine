@@ -15,7 +15,7 @@ class Text:
     should wrap around the terminal without breaking in the middle of words.
     """
 
-    def __init__(self, text, indentation=INDENTATION,
+    def __init__(self, text='', indentation=INDENTATION,
                  margin_left=MARGIN_LEFT, margin_right=MARGIN_RIGHT):
         """
         Args:
