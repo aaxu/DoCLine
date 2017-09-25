@@ -78,14 +78,17 @@ class Text:
         # Make the header of each function yellow.
         # This regex matches anything of the forms
         # func_name(...) or func_name(self) or func_name(self, ...)
-        text = re.sub(r'(\n\s*[\w_\-]+\((?:\.{3}|self.*)\)\s)',
+        yellow = colorama.Fore.LIGHTYELLOW_EX
+        default = colorama.Style.RESET_ALL
+        text = re.sub(r'([ \t]+[\w_]+\((\.{3}|self.*)?\))',
                       self.yellow_text(r'\1'), text)
+        # import pdb; pdb.set_trace()
         # Make all constant names blue.
         text = re.sub(r'(\s[A-Z0-9_\-]+\s*)(=)',
                       self.blue_text(r'\1') + r'\2', text)
 
         # Color all section headers.
-        text = re.sub(r'(\n\s*[A-Z0-9\s]+\s*\n)',
+        text = re.sub(r'(\n[ \t]+[A-Z_]+[A-Z_ \t\d]*\n)',
                       self.magenta_text(r'\1'), text)
         text = re.sub(r'(Help on[\w\s]+:)', self.magenta_text(r'\1'), text)
         return text
