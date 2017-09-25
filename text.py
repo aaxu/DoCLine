@@ -9,6 +9,11 @@ ROWS, COLUMNS = [int(dim) for dim in
                  (os.popen('stty size', 'r').read().split())]
 
 class Text:
+    """
+    This class is used to take in a text and outputs it nicely on the terminal
+    such that function signatures and function names are colored and long lines
+    should wrap around the terminal without breaking in the middle of words.
+    """
 
     def __init__(self, text, indentation=INDENTATION,
                  margin_left=MARGIN_LEFT, margin_right=MARGIN_RIGHT):
@@ -27,7 +32,7 @@ class Text:
         self.margin_right = margin_right
         self.margin_left = margin_left
 
-    def __blue_text(self, text):
+    def blue_text(self, text):
         """
         Args:
             text: The string you want to print in blue.
@@ -35,9 +40,9 @@ class Text:
         Returns:
             The same string, but will be blue when printed.
         """
-        return self.__color_text(text, colorama.Fore.LIGHTBLUE_EX)
+        return self.color_text(text, colorama.Fore.LIGHTBLUE_EX)
 
-    def __yellow_text(self, text):
+    def yellow_text(self, text):
         """
         Args:
             text: The string you want to print in yellow.
@@ -45,9 +50,9 @@ class Text:
         Returns:
             The same string, but will be yellow when printed.
         """
-        return self.__color_text(text, colorama.Fore.LIGHTYELLOW_EX)
+        return self.color_text(text, colorama.Fore.LIGHTYELLOW_EX)
 
-    def __color_text(self, text, color):
+    def color_text(self, text, color):
         """
         Args:
             text: The string that you want to print in color.
@@ -64,10 +69,10 @@ class Text:
         # This regex matches anything of the forms
         # func_name(...) or func_name(self) or func_name(self, ...)
         text = re.sub(r'(\s\w+\((?:\.{3}|self.*)\)\s)',
-                      self.__yellow_text(r'\1'), text)
+                      self.yellow_text(r'\1'), text)
         # Make all constant names blue.
         text = re.sub(r'(\s[A-Z0-9_\-]+\s*)(=)',
-                      self.__blue_text(r'\1') + r'\2', text)
+                      self.blue_text(r'\1') + r'\2', text)
         return text
 
     def __format_line_wrap(self, line):
@@ -103,7 +108,7 @@ class Text:
                 return [line]
             break_line_at_index = COLUMNS - self.margin_right
             while (not line[break_line_at_index].isspace() and
-                           break_line_at_index >= len(indent) + self.margin_left):
+                   break_line_at_index >= len(indent) + self.margin_left):
                 break_line_at_index -= 1
             # Case for one really long word
             if break_line_at_index < len(indent) + self.margin_left:
