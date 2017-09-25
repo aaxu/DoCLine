@@ -31,10 +31,10 @@ class Text:
         self.indentation = indentation
         self.margin_right = margin_right
         self.margin_left = margin_left
-        self.function_regex = re.compile(r'^[\s|]+[\w_]+\([^\)]*\)\s*$')
-        self.constant_regex = re.compile('^[\s|]*[A-Z0-9_\-]+\s*=')
-        self.section_regex1 = re.compile(r'^\s+[A-Z_]+[A-Z_\s\d]*$')
-        self.section_regex2 = re.compile(r'Help on.+:')
+        self.function_regex = re.compile(r'^([\s|]+)([\w_]+\([^\)]*\))(\s*)$')
+        self.constant_regex = re.compile('^([\s|]*)([A-Z0-9_\-]+)(\s*)=')
+        self.section_regex1 = re.compile(r'^(\s+)([A-Z_]+[A-Z_ \t\d]*)(\s*)$')
+        self.section_regex2 = re.compile(r'(Help on.+)(:)')
 
     def color_text(self, text, color):
         """
@@ -140,12 +140,18 @@ class Text:
         Returns:
             The string but colored if printed.
         """
-        if self.is_function_header(line):
-            return self.yellow_text(line)
-        elif self.is_constant_definition(line):
-            return self.blue_text(line)
-        elif self.is_section_header(line):
-            return self.magenta_text(line)
+        function_match = self.is_function_header(line)
+        constant_match = self.is_constant_definition(line)
+        section_match = self.is_section_header(line)
+        if function_match:
+            function_text = function_match.group(2)
+            return line.replace(function_text, self.yellow_text(function_text))
+        elif constant_match:
+            constant_text = constant_match.group(2)
+            return line.replace(constant_text, self.blue_text(constant_text))
+        elif section_match:
+            section_text = section_match.group(2)
+            return line.replace(section_text, self.magenta_text(section_text))
         return line
 
     def get_formatted_text(self):
