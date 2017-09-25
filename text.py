@@ -42,6 +42,16 @@ class Text:
         """
         return self.color_text(text, colorama.Fore.LIGHTBLUE_EX)
 
+    def magenta_text(self, text):
+        """
+            Args:
+                text: The string you want to print in magenta.
+
+            Returns:
+                The same string, but will be magenta when printed.
+        """
+        return self.color_text(text, colorama.Fore.LIGHTMAGENTA_EX)
+
     def yellow_text(self, text):
         """
         Args:
@@ -68,11 +78,16 @@ class Text:
         # Make the header of each function yellow.
         # This regex matches anything of the forms
         # func_name(...) or func_name(self) or func_name(self, ...)
-        text = re.sub(r'(\s\w+\((?:\.{3}|self.*)\)\s)',
+        text = re.sub(r'(\n\s*[\w_\-]+\((?:\.{3}|self.*)\)\s)',
                       self.yellow_text(r'\1'), text)
         # Make all constant names blue.
         text = re.sub(r'(\s[A-Z0-9_\-]+\s*)(=)',
                       self.blue_text(r'\1') + r'\2', text)
+
+        # Color all section headers.
+        text = re.sub(r'(\n\s*[A-Z0-9\s]+\s*\n)',
+                      self.magenta_text(r'\1'), text)
+        text = re.sub(r'(Help on[\w\s]+:)', self.magenta_text(r'\1'), text)
         return text
 
     def __format_line_wrap(self, line):
