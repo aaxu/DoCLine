@@ -123,10 +123,12 @@ class Text:
                 current_indent = (re.match(r'^\s*[^\w\s]*\s*', line).group())
                 next_indent = (current_indent[self.margin_left:] +
                                self.indentation)
-            first_line = [line[:break_line_at_index]]
+            first_line = line[:break_line_at_index]
+            if not first_line.strip():
+                return [line[break_line_at_index:]]
             rest_of_lines = format_line_with_indents(line[break_line_at_index:],
                                                      next_indent)
-            return first_line + rest_of_lines
+            return [first_line] + rest_of_lines
 
         return format_line_with_indents(line, '')
 
@@ -164,8 +166,8 @@ class Text:
         formatted_text = []
         for line in lines:
             split_lines = self.__format_line_wrap(line)
-            new_line = '\n'.join(split_lines)
-            colored_line = self.__format_line_colors(new_line)
+            formatted_line = '\n'.join(split_lines)
+            colored_line = self.__format_line_colors(formatted_line)
             formatted_text.append(colored_line)
         nice_text = '\n'.join(formatted_text)
         return nice_text
