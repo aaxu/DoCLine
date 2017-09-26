@@ -4,7 +4,7 @@ import colorama
 
 INDENTATION = " " * 4
 MARGIN_LEFT = 0
-MARGIN_RIGHT = 3
+MARGIN_RIGHT = 2
 ROWS, COLUMNS = [int(dim) for dim in
                  (os.popen('stty size', 'r').read().split())]
 
@@ -31,7 +31,7 @@ class Text:
         self.indentation = indentation
         self.margin_right = margin_right
         self.margin_left = margin_left
-        self.function_regex = re.compile(r'^([\s\|]+)([\w_]+\([^\)]*\))(\s*)$')
+        self.function_regex = re.compile(r'^([\s\|]*)([\w_\.]+\s*(?:=|->|=>)?\s*[\w_\.]+\([^\)]*\))(\s*)')
         self.constant_regex = re.compile(r'^([\s\|]*)([A-Z0-9_\-]+)(\s*)=')
         self.section_regex1 = re.compile(r'^([\s\|]*)([A-Z_]+[A-Z_ \t\d]*)(\s*)$')
         self.section_regex2 = re.compile(r'^([\s\|]*)(.+)(:)$')

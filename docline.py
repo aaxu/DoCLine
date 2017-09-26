@@ -34,7 +34,7 @@ def print_doc(doc):
     Returns:
         None. Prints out the documentation in a readable and colored format.
     """
-    doc_text = text.Text(doc, margin_left=5)
+    doc_text = text.Text(doc)
     print doc_text
 
 def main():
