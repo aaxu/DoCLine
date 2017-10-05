@@ -1,22 +1,8 @@
-import sys
 import subprocess
+import sys
 import colorama
-import text
-from reppy.robots import Robots
-
-USER_AGENT = 'DoCLine Parser (http://github.com/aaxu/docline)'
-
-def check_website_policy(url):
-    """
-    Args:
-        url: The URL of the website you are trying to check.
-
-    Returns:
-        True if the website's policy allows you to scrape. Otherwise False.
-    """
-    robot_url = Robots.robots_url(url)
-    robot = Robots.fetch(robot_url)
-    return robot.allowed(url, USER_AGENT)
+import app.web_scraper
+from app import text
 
 def get_doc():
     """
@@ -37,6 +23,22 @@ def print_doc(doc):
     doc_text = text.Text(doc)
     print doc_text
 
+def get_query(args):
+    """
+    Finds and returns the query that the user searched for. The name of the
+    language should be the first word of the arguments passed into the program.
+
+    Args:
+        args (list): A list of strings that represent the arguments passed into
+                     the program. You can pass in sys.argv.
+
+    Returns:
+        A tuple containing (language_name, query) where language_name is the
+        name of the programming language that the user is requesting and
+        query is the documentation they want to search for in that language.
+    """
+    return (args[1], ' '.join(args[2:]))
+
 def main():
     """
     Main logic of the program.
@@ -44,9 +46,16 @@ def main():
     Returns:
         None.
     """
-    doc = get_doc()
-    print_doc(doc)
+    if len(sys.argv) < 3:
+        print "Wrong format. You should pass in the programming langauge name" \
+              "as the first argument, a class as the second argument, and" \
+              "an optional method in the third argument."
+        exit(0)
+    colorama.init()
+    args = get_query(sys.argv)
+    python_doc_url = 'https://docs.python.org/2/'
+    if app.web_scraper.website_allows_scraping(python_doc_url):
+        print python_doc_url + " allows scraping."
 
 if __name__ == '__main__':
-    colorama.init()
     main()
