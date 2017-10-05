@@ -27,10 +27,13 @@ def get_query(args):
     """
     Finds and returns the query that the user searched for. The name of the
     language should be the first word of the arguments passed into the program.
+    Equivalently, it should be the second element in sys.argv since the first
+    element is the program name.
 
     Args:
         args (list): A list of strings that represent the arguments passed into
-                     the program. You can pass in sys.argv.
+                     the program. You can pass in sys.argv. Note that the first
+                     argument should be the program name.
 
     Returns:
         A tuple containing (language_name, query) where language_name is the
