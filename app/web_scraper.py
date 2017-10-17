@@ -1,7 +1,18 @@
 import urllib
+import requests
 from reppy.robots import Robots
 USER_AGENT = 'DoCLine Parser (http://github.com/aaxu/docline)'
 GOOGLE_SEARCH_URL = "http://www.google.com/search?q=site:"
+
+def get_website_html(url):
+    """
+    Args:
+        url (str): The URL of the website you want to extract the HTML from.
+
+    Returns:
+        A string containing all the HTML from url.
+    """
+    return requests.get(url).text
 
 def website_allows_scraping(url):
     """

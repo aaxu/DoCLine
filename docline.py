@@ -4,6 +4,34 @@ import colorama
 import app.doc_websites
 import app.web_scraper
 from app.text import Text
+from bs4 import BeautifulSoup
+
+def check_args():
+    """
+    Checks the arguments passed into the program from terminal. It will exit
+    the program and display the appropriate message if not enough arguments
+    were passed in or an unsupported language name was queried.
+
+    Returns:
+        None.
+    """
+    error_msg = ""
+    if len(sys.argv) < 3:
+        error_msg = ("WRONG FORMAT. You should pass in the programming" +
+                     " langauge name as the first argument, a class as" +
+                     " the second argument, and an optional method name" +
+                     " in the third argument.")
+    else:
+        language, _ = get_query(sys.argv)
+        if language not in app.doc_websites.websites:
+            error_msg = ("Unfortunately, " +
+                         Text.magenta_text(Text.magenta_text(language)) +
+                         " is not a programming language that is currently" +
+                         " supported by DoCLine. :(")
+    if error_msg:
+        print_doc(error_msg)
+        exit(0)
+
 def get_doc():
     """
     Returns:
@@ -49,25 +77,16 @@ def main():
     Returns:
         None.
     """
-    if len(sys.argv) < 3:
-        error_msg = ("WRONG FORMAT. You should pass in the programming" +
-                     " langauge name as the first argument, a class as" +
-                     " the second argument, and an optional method name" +
-                     " in the third argument.")
-        print_doc(error_msg)
-        exit(0)
+
     colorama.init()
+    check_args()
     language, query = get_query(sys.argv)
-    if language not in app.doc_websites.websites:
-        error_msg = ("Unfortunately, " +
-                     Text.magenta_text(Text.magenta_text(language)) +
-                     " is not yet supported by DoCLine. :(")
-        print_doc(error_msg)
-        exit(0)
-    else:
-        doc_url = app.doc_websites.websites[language]
+    doc_url = app.doc_websites.websites[language]
     if app.web_scraper.website_allows_scraping(doc_url):
-        print app.web_scraper.query_to_google_url(query, doc_url)
+        google_search = app.web_scraper.query_to_google_url(query, doc_url)
+        google_html = app.web_scraper.get_website_html(google_search)
+        soup = BeautifulSoup(google_html, 'html.parser')
+        print soup.text
 
 if __name__ == '__main__':
     main()
