@@ -1,9 +1,9 @@
 import subprocess
 import sys
 import colorama
+import app.doc_websites
 import app.web_scraper
-import app.text
-
+from app.text import Text
 def get_doc():
     """
     Returns:
@@ -20,7 +20,7 @@ def print_doc(doc):
     Returns:
         None. Prints out the documentation in a readable and colored format.
     """
-    doc_text = app.text.Text(doc)
+    doc_text = Text(doc)
     print doc_text
 
 def get_query(args):
@@ -40,7 +40,7 @@ def get_query(args):
         name of the programming language that the user is requesting and
         query is the documentation they want to search for in that language.
     """
-    return (args[1], ' '.join(args[2:]))
+    return (args[1].lower(), ' '.join(args[2:]).lower())
 
 def main():
     """
@@ -50,15 +50,24 @@ def main():
         None.
     """
     if len(sys.argv) < 3:
-        print "Wrong format. You should pass in the programming langauge name" \
-              "as the first argument, a class as the second argument, and" \
-              "an optional method in the third argument."
+        error_msg = ("WRONG FORMAT. You should pass in the programming" +
+                     " langauge name as the first argument, a class as" +
+                     " the second argument, and an optional method name" +
+                     " in the third argument.")
+        print_doc(error_msg)
         exit(0)
     colorama.init()
-    args = get_query(sys.argv)
-    python_doc_url = 'https://docs.python.org/2/'
-    if app.web_scraper.website_allows_scraping(python_doc_url):
-        print python_doc_url + " allows scraping."
+    language, query = get_query(sys.argv)
+    if language not in app.doc_websites.websites:
+        error_msg = ("Unfortunately, " +
+                     Text.magenta_text(Text.magenta_text(language)) +
+                     " is not yet supported by DoCLine. :(")
+        print_doc(error_msg)
+        exit(0)
+    else:
+        doc_url = app.doc_websites.websites[language]
+    if app.web_scraper.website_allows_scraping(doc_url):
+        print app.web_scraper.query_to_google_url(query, doc_url)
 
 if __name__ == '__main__':
     main()

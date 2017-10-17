@@ -36,7 +36,8 @@ class Text:
         self.section_regex1 = re.compile(r'^([\s\|]*)([A-Z_]+[A-Z_ \t\d]*)(\s*)$')
         self.section_regex2 = re.compile(r'^([\s\|]*)(.+)(:)$')
 
-    def color_text(self, text, color):
+    @classmethod
+    def color_text(cls, text, color):
         """
         Args:
             text (string): The string that you want to print in color.
@@ -48,7 +49,8 @@ class Text:
         """
         return color + text + colorama.Style.RESET_ALL
 
-    def yellow_text(self, text):
+    @classmethod
+    def yellow_text(cls, text):
         """
         Args:
             text (string): The string you want to print in yellow.
@@ -56,9 +58,10 @@ class Text:
         Returns:
             The same string, but will be yellow when printed.
         """
-        return self.color_text(text, colorama.Fore.LIGHTYELLOW_EX)
+        return Text.color_text(text, colorama.Fore.LIGHTYELLOW_EX)
 
-    def blue_text(self, text):
+    @classmethod
+    def blue_text(cls, text):
         """
         Args:
             text (string): The string you want to print in blue.
@@ -66,9 +69,10 @@ class Text:
         Returns:
             The same string, but will be blue when printed.
         """
-        return self.color_text(text, colorama.Fore.LIGHTBLUE_EX)
+        return Text.color_text(text, colorama.Fore.LIGHTBLUE_EX)
 
-    def magenta_text(self, text):
+    @classmethod
+    def magenta_text(cls, text):
         """
             Args:
                 text (string): The string you want to print in magenta.
@@ -76,7 +80,7 @@ class Text:
             Returns:
                 The same string, but will be magenta when printed.
         """
-        return self.color_text(text, colorama.Fore.LIGHTMAGENTA_EX)
+        return Text.color_text(text, colorama.Fore.LIGHTMAGENTA_EX)
 
     def __format_line_wrap(self, line):
         """
@@ -147,13 +151,13 @@ class Text:
         section_match = self.is_section_header(line)
         if function_match:
             function_text = function_match.group(2)
-            return line.replace(function_text, self.yellow_text(function_text))
+            return line.replace(function_text, Text.yellow_text(function_text))
         elif constant_match:
             constant_text = constant_match.group(2)
-            return line.replace(constant_text, self.blue_text(constant_text))
+            return line.replace(constant_text, Text.blue_text(constant_text))
         elif section_match:
             section_text = section_match.group(2)
-            return line.replace(section_text, self.magenta_text(section_text))
+            return line.replace(section_text, Text.magenta_text(section_text))
         return line
 
     def get_formatted_text(self):

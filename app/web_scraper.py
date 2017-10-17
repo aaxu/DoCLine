@@ -15,12 +15,12 @@ def website_allows_scraping(url):
     robot = Robots.fetch(robot_url)
     return robot.allowed(url, USER_AGENT)
 
-def query_to_google_search_url(query, website=''):
+def query_to_google_url(query, website=''):
     """
     Args:
-        query (str): The query you want to search for on google.
+        query (list of strings): The query you want to search for on google.
 
     Returns:
         The associated google URL that searches for the query.
     """
-    return GOOGLE_SEARCH_URL + website + urllib.quote_plus(query)
+    return GOOGLE_SEARCH_URL + website + '+' + urllib.quote_plus(query)
