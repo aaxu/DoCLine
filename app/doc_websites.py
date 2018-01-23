@@ -1,3 +1,3 @@
 websites = {
-    'python': 'https://docs.python.org/2/',
+    'python2': 'docs.python.org',
 }

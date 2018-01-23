@@ -82,11 +82,11 @@ def main():
     check_args()
     language, query = get_query(sys.argv)
     doc_url = app.doc_websites.websites[language]
-    if app.web_scraper.website_allows_scraping(doc_url):
-        google_search = app.web_scraper.query_to_google_url(query, doc_url)
-        google_html = app.web_scraper.get_website_html(google_search)
-        soup = BeautifulSoup(google_html, 'html.parser')
-        print soup.text
+    google_search = app.web_scraper.query_to_google_url(query, doc_url)
+    google_html = app.web_scraper.get_website_html(google_search)
+    soup = BeautifulSoup(google_html, 'html.parser')
+    # TODO: Get the first URL link, check the robots.txt, then extract the html.
+    print soup.text
 
 if __name__ == '__main__':
     main()
