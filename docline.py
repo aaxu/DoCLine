@@ -1,10 +1,10 @@
 import subprocess
 import sys
 import colorama
+from bs4 import BeautifulSoup
 import app.doc_websites
 import app.web_scraper
 from app.text import Text
-from bs4 import BeautifulSoup
 
 def check_args():
     """
@@ -77,16 +77,24 @@ def main():
     Returns:
         None.
     """
-
     colorama.init()
     check_args()
     language, query = get_query(sys.argv)
     doc_url = app.doc_websites.websites[language]
-    google_search = app.web_scraper.query_to_google_url(query, doc_url)
-    google_html = app.web_scraper.get_website_html(google_search)
+    google_search_url = app.web_scraper.query_to_google_url(query, doc_url)
+    google_html = app.web_scraper.get_website_html(google_search_url)
     soup = BeautifulSoup(google_html, 'html.parser')
-    # TODO: Get the first URL link, check the robots.txt, then extract the html.
-    print soup.text
+    first_res = soup.find_all('div', class_='g')[0]
+    url = first_res.find('a')['href'] # May return URL with some header.
+    url = app.web_scraper.fix_href_url(url) # Fix the URL.
+    # Check if the website allows us to scrape it for information.
+    if not app.web_scraper.website_allows_scraping(url):
+        text = ("Unfortunately, the documentation website for " +
+                Text.magenta_text(language) + " does not allow scraping." +
+                "The program will now exit.")
+        print text
+        exit(0)
+    doc_html = app.web_scraper.get_website_html(url)
 
 if __name__ == '__main__':
     main()

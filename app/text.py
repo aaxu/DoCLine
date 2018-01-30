@@ -82,6 +82,17 @@ class Text:
         """
         return Text.color_text(text, colorama.Fore.LIGHTMAGENTA_EX)
 
+    @classmethod
+    def red_text(cls, text):
+        """
+            Args:
+                text (string): The string you want to print in red.
+
+            Returns:
+                The same string, but will be red when printed.
+        """
+        return Text.color_text(text, colorama.Fore.RED)
+
     def __format_line_wrap(self, line):
         """
         Args:
